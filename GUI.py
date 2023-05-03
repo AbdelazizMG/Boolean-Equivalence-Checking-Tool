@@ -1,6 +1,8 @@
 from PyQt5 import QtWidgets , QtCore
 from PyQt5 import uic
 
+from Parse import Parser
+
 import sys , os , json
 
 
@@ -46,6 +48,8 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__projectsinDataBase = {} 
             self.__counter = 0
 
+            self.__parser = Parser()
+
                                     #Statusbar Message
             self.__statusbar.showMessage("Welcome")    
 
@@ -55,12 +59,46 @@ class UI_Window(QtWidgets.QMainWindow):
 
     #Function to Check the Equivalence of the two strings
     def __Check(self):
+
+          #Read Entry
+          if self.__Exp1_Entry.text() == "" or self.__Exp1_Entry.text() == "":
+                return
+          
           self.__projectDict['exp1'] = self.__Exp1_Entry.text()
           self.__projectDict['exp2']  = self.__Exp2_Entry.text()
           self.__projectDict['result'] = str(True)
           self.__projectDict['trial'] = str(self.__counter)
 
           #Call Parser
+          flag_barcket,vars_flag,expr_flag,error_list_names = self.__parser.GUI_check(self.__projectDict['exp1'])
+
+          self.__Exp1Validation_label.setStyleSheet("color: red;")  
+          if flag_barcket == 0:
+                self.__Exp1Validation_label.setText('There is an error in Brackets ')
+          elif vars_flag == 0:
+                self.__Exp1Validation_label.setText(f'Variables {error_list_names} are invalid ')
+          elif expr_flag == 0:
+                self.__Exp1Validation_label.setText('There is an error in Expression ')
+          else:
+                self.__Exp1Validation_label.setText('VALID ') 
+                self.__Exp1Validation_label.setStyleSheet("color: green;")   
+
+          flag_barcket,vars_flag,expr_flag,error_list_names = self.__parser.GUI_check(self.__projectDict['exp2'])
+
+
+           
+          if flag_barcket == 0:
+                self.__Exp2Validation_label.setText('There is an error in Brackets ')
+                self.__Exp2Validation_label.setStyleSheet("color: red;") 
+          elif vars_flag == 0:
+                self.__Exp2Validation_label.setText(f'Variables {error_list_names} are invalid ')
+                self.__Exp2Validation_label.setStyleSheet("color: red;") 
+          elif expr_flag == 0:
+                self.__Exp2Validation_label.setText('There is an error in Expression ')
+                self.__Exp2Validation_label.setStyleSheet("color: red;") 
+          else:
+                self.__Exp2Validation_label.setText('VALID ') 
+                self.__Exp2Validation_label.setStyleSheet("color: green;")                  
 
           #Store Trial State
           self.__saveProject()
