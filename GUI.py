@@ -6,6 +6,7 @@ import sys , os , json
 
 class UI_Window(QtWidgets.QMainWindow):
 
+    #Constuctor
     def __init__(self):
             super(UI_Window,self).__init__()
 
@@ -14,7 +15,12 @@ class UI_Window(QtWidgets.QMainWindow):
 
                                     #Entries
             self.__Exp1_Entry = self.findChild(QtWidgets.QLineEdit,"exp1_lineEdit")
-            self.__Exp2_Entry = self.findChild(QtWidgets.QLineEdit,"exp2_lineEdit")    
+            self.__Exp2_Entry = self.findChild(QtWidgets.QLineEdit,"exp2_lineEdit")  
+
+                                    #Labels
+            self.__Exp1Validation_label = self.findChild(QtWidgets.QLabel,"exp1Validation_label")   
+            self.__Exp2Validation_label = self.findChild(QtWidgets.QLabel,"exp2Validation_label")  
+            self.__Equivalence_label = self.findChild(QtWidgets.QLabel,"Equivalence_label")                                      
 
                                     #PushButtons
             self.__check_pushButton = self.findChild(QtWidgets.QPushButton,"check_pushButton")   
@@ -44,7 +50,6 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__statusbar.showMessage("Welcome")    
 
                                     #Initial Action
-
             #Read Saved Projects at the beginning of the tool
             self.__readDataBase()
 
