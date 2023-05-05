@@ -132,7 +132,6 @@ class Parser:
       string = re.sub(r"T\s{0,}\)",r"T)",string)
       string = re.sub(r"F\s{0,}\)",r"F)",string)
       string = string.replace(" ", "")
-      print(string)
       return self.__solve(string)
 
    def __Check_bool_func(self,vars,string):
@@ -142,10 +141,44 @@ class Parser:
          temp = re.sub(vars[i],True_vector,temp)
       self.__Boolean_Function_Solve(temp)
    
+   def __var_name_error_cuz(self,vars_error):
+      names_chars = []
+      names_chars.append(vars_error)
+      temp = []
+      for v in vars_error:
+         string = re.sub(r"[a-zA-Z0-9]",r" ",v)
+         string = re.sub(r" ",r"",string)
+         if v[0] in ['0','1','2','3','4','5','6','7','8','9']:
+            if string:
+               temp.append("start with number & contain the special chars "+string)
+            else:
+               temp.append("start with number")
+         else:
+            temp.append(string)
+      names_chars.append(temp)
+      return names_chars
+   
+   def map_var(self,vars1,vars2):
+      counter = 0
+      vars_1 = []
+      vars_2 = []
+      for i in range(0,len(vars1)):
+         temp = "x"+str(counter)
+         vars_1.append(temp)
+         counter = counter + 1
+      counter = 0
+      for i in range(0,len(vars2)):
+         temp = "x"+str(counter)
+         vars_2.append(temp)
+         counter = counter + 1
+      return vars_1,vars_2
+
+
    def GUI_check(self,string):
       vars,flag_barckets = self.__vars_list(string)
       Correct_flag = 0
       error_list_names = []
+      error_list_names_cuz = []
       expr_flag = 0
       if flag_barckets:
          Correct_flag,error_list_names = self.__vars_names_checks(vars)
@@ -155,30 +188,46 @@ class Parser:
                self.__Check_bool_func(vars,string)
             except Exception as e:
                expr_flag = 0
-               print(str(e))
          else:
             expr_flag = 0
-         return flag_barckets,Correct_flag,expr_flag,error_list_names
+            error_list_names_cuz = self.__var_name_error_cuz(error_list_names)
+         return flag_barckets,Correct_flag,expr_flag,error_list_names_cuz,vars,string
       else:
-         return flag_barckets,Correct_flag,expr_flag,error_list_names
-
+         return flag_barckets,Correct_flag,expr_flag,error_list_names_cuz,vars,string
+#GUI_check must be called first and then from the last 2 returns, and after making some checks on the first 3 flags 
+#then we pass the last 2 returns to the next function which is Parser_Output then the return of this function goes to BDD block
+   def Parser_Output(self,string,vars):
+      TT = self.__TT_comb(vars)
+      sub_TT = self.__TT_Substitute(string,TT,vars)
+      TT_OUT = []
+      for v in sub_TT:
+         TT_OUT.append(self.__Boolean_Function_Solve(v))
+      vars.reverse()
+      return vars,TT_OUT
+      
 
 
 if __name__ == "__main__":
    ob = Parser()
    s = "((a~&b|c^(a&&c))||(b&a)~^c~|b)"
-   s = "        )a(                &b|   c"
+   #s = " "
+   vars1 = ['a','b','c']
+   vars2 = ['e','f','g','h']
+   x,y = ob.map_var(vars1,vars2)
+   print(x)
+   print(y)
+   #print(ob.Parser_Output(s,['a','b','c']))
+   #print(ob.var_name_error_cuz(vars))
    #s = "           T          &T|T"
    #result = ob.Boolean_Function_Solve(s)
    #vars = ob.vars_no(s)
    #vars = ob.vars_list(s)
-   flag_barckets,Correct_flag,expr_flag,error_list_names = ob.GUI_check(s)
-   print(flag_barckets)
-   
-   #print(vars)
-   print(Correct_flag)
-   print(expr_flag)
-   print(error_list_names)
+   #flag_barckets,Correct_flag,expr_flag,error_list_names = ob.GUI_check(s)
+   #print(flag_barckets)
+   ##print(vars)
+   #print(Correct_flag)
+   #print(expr_flag)
+   #print(error_list_names)
    #TT = ob.TT_comb(vars)
    #TT = ['T','T','T']
    #vars = ['a','b','c']
@@ -193,4 +242,3 @@ if __name__ == "__main__":
    #      output.append('F')
    #TT.append(output)
    #print(TT)
-
