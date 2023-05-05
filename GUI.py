@@ -5,7 +5,6 @@ from Parse import Parser
 
 import sys , os , json
 
-
 class UI_Window(QtWidgets.QMainWindow):
 
     #Constuctor
@@ -40,7 +39,8 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__projectDict = {     
                                  'trial': '',                        #Dict to hold the project information to be converted to json file
                                  'exp1' : '',
-                                 'exp2' : '', 
+                                 'exp2' : '',
+                                 'valid': '0', 
                                  'result' : ''                                                             
                                  }                                    
             self.__dataBaseDirectory = "C:\Sondos"             #Variable to store the Data Base Directory Path 
@@ -81,7 +81,8 @@ class UI_Window(QtWidgets.QMainWindow):
                 self.__Exp1Validation_label.setText('There is an error in Expression ')
           else:
                 self.__Exp1Validation_label.setText('VALID ') 
-                self.__Exp1Validation_label.setStyleSheet("color: green;")   
+                self.__Exp1Validation_label.setStyleSheet("color: green;")
+                self.__projectDict['exp1'] = '1'  
 
           flag_barcket,vars_flag,expr_flag,error_list_names = self.__parser.GUI_check(self.__projectDict['exp2'])
 
@@ -98,10 +99,13 @@ class UI_Window(QtWidgets.QMainWindow):
                 self.__Exp2Validation_label.setStyleSheet("color: red;") 
           else:
                 self.__Exp2Validation_label.setText('VALID ') 
-                self.__Exp2Validation_label.setStyleSheet("color: green;")                  
+                self.__Exp2Validation_label.setStyleSheet("color: green;")  
+                self.__projectDict['exp2'] = '1'                
 
-          #Store Trial State
-          self.__saveProject()
+          if self.__projectDict['exp1'] == '1' or self.__projectDict['exp2'] == '1':
+
+            #Store Trial State
+            self.__saveProject()
 
           #Clear Content
           self.__Exp1_Entry.setText('')
