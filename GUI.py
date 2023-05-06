@@ -1,7 +1,12 @@
-from PyQt5 import QtWidgets , QtCore
+from PyQt5 import QtWidgets , QtCore , QtGui
 from PyQt5 import uic
 
-from Parse import Parser
+from node import node
+from Parser import Parser
+from BDD import BDD
+from ROBDD import ROBDD
+from drawer import Drawer
+from Checker import Equivalence_Checker
 
 import sys , os , json
 
@@ -10,6 +15,11 @@ class UI_Window(QtWidgets.QMainWindow):
     #Constuctor
     def __init__(self):
             super(UI_Window,self).__init__()
+
+            #Define Other Widgets
+            self.__BDD = BDD()
+            self.__Checker = Equivalence_Checker()
+            self.__drawer = Drawer()
 
             #load the UI file
             uic.loadUi("GUI.ui",self)
@@ -22,6 +32,10 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__Exp1Validation_label = self.findChild(QtWidgets.QLabel,"exp1Validation_label")   
             self.__Exp2Validation_label = self.findChild(QtWidgets.QLabel,"exp2Validation_label")  
             self.__Equivalence_label = self.findChild(QtWidgets.QLabel,"Equivalence_label")                                      
+            self.__BDD_1_image = self.findChild(QtWidgets.QLabel,"BDD_image_1")
+            self.__BDD_2_image = self.findChild(QtWidgets.QLabel,"BDD_image_2")
+            self.__ROBDD_1_image = self.findChild(QtWidgets.QLabel,"ROBDD_image1")
+            self.__ROBDD_2_image = self.findChild(QtWidgets.QLabel,"ROBDD_image2")
 
                                     #PushButtons
             self.__check_pushButton = self.findChild(QtWidgets.QPushButton,"check_pushButton")   
@@ -40,6 +54,8 @@ class UI_Window(QtWidgets.QMainWindow):
                                  'trial': '',                        #Dict to hold the project information to be converted to json file
                                  'exp1' : '',
                                  'exp2' : '',
+                                 'exp1_valid' : 0 ,
+                                 'exp2_valid' : 0 , 
                                  'valid': '0', 
                                  'result' : ''                                                             
                                  }                                    
@@ -47,6 +63,7 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__baseDirectory = os.getcwd()                 #Variable to store cwd before changing any thing
             self.__projectsinDataBase = {} 
             self.__counter = 0
+            self.__exp1validation = 0
 
             self.__parser = Parser()
 
@@ -66,11 +83,10 @@ class UI_Window(QtWidgets.QMainWindow):
           
           self.__projectDict['exp1'] = self.__Exp1_Entry.text()
           self.__projectDict['exp2']  = self.__Exp2_Entry.text()
-          self.__projectDict['result'] = str(True)
           self.__projectDict['trial'] = str(self.__counter)
 
           #Call Parser
-          flag_barcket,vars_flag,expr_flag,error_list_names = self.__parser.GUI_check(self.__projectDict['exp1'])
+          flag_barcket,vars_flag,expr_flag,error_list_names,variable_list1,input_exp1 = self.__parser.GUI_check(self.__projectDict['exp1'])
 
           self.__Exp1Validation_label.setStyleSheet("color: red;")  
           if flag_barcket == 0:
@@ -82,9 +98,9 @@ class UI_Window(QtWidgets.QMainWindow):
           else:
                 self.__Exp1Validation_label.setText('VALID ') 
                 self.__Exp1Validation_label.setStyleSheet("color: green;")
-                self.__projectDict['exp1'] = '1'  
+                self.__projectDict['exp1_valid'] = '1'    
 
-          flag_barcket,vars_flag,expr_flag,error_list_names = self.__parser.GUI_check(self.__projectDict['exp2'])
+          flag_barcket,vars_flag,expr_flag,error_list_names,variable_list2,input_exp2 = self.__parser.GUI_check(self.__projectDict['exp2'])
 
 
            
@@ -100,12 +116,98 @@ class UI_Window(QtWidgets.QMainWindow):
           else:
                 self.__Exp2Validation_label.setText('VALID ') 
                 self.__Exp2Validation_label.setStyleSheet("color: green;")  
-                self.__projectDict['exp2'] = '1'                
+                self.__projectDict['exp2_valid'] = '1'                
 
-          if self.__projectDict['exp1'] == '1' or self.__projectDict['exp2'] == '1':
+          if self.__projectDict['exp1_valid'] == '1' and self.__projectDict['exp2_valid'] == '1':
 
             #Store Trial State
             self.__saveProject()
+
+            #Exp1 Operation   
+            variable_list1_drawable , TT_1_drawable = self.__parser.Parser_Output(input_exp1,variable_list1)
+            list1_drawable = self.__BDD.start(variable_list1_drawable,TT_1_drawable)
+
+            self.__drawer.draw(list1_drawable)
+
+            flag_barcket,vars_flag,expr_flag,error_list_names,variable_list1,input_exp1 = self.__parser.GUI_check(self.__projectDict['exp1'])
+            variable_list1 , TT_1_p = self.__parser.Parser_Output(input_exp1,variable_list1)            
+            list1 = self.__BDD.start(variable_list1,TT_1_p)
+            list1.reverse()
+            self.__ROBDD1 = ROBDD(len(variable_list1))
+            labelled_list1 = self.__ROBDD1.assign_labels(list1)
+           
+            Reduced_List1= [node(0, 0), node(1, 1)]
+            list11 = self.__ROBDD1.Remove_Nodes(labelled_list1, Reduced_List1)
+            list11.reverse()
+            self.__drawer.draw(list11)
+
+            #Exp2 Operation
+            variable_list2_drawable , TT_2_drawable = self.__parser.Parser_Output(input_exp2,variable_list2)
+            list2_drawable = self.__BDD.start(variable_list2_drawable,TT_2_drawable)
+            self.__drawer.draw(list2_drawable)
+
+            flag_barcket,vars_flag,expr_flag,error_list_names,variable_list2,input_exp2 = self.__parser.GUI_check(self.__projectDict['exp2'])
+            variable_list2 , TT_2_p = self.__parser.Parser_Output(input_exp2,variable_list2)
+            list2 = self.__BDD.start(variable_list2,TT_2_p)
+            list2.reverse()
+            self.__ROBDD2 = ROBDD(len(variable_list2))
+            labelled_list2 = self.__ROBDD2.assign_labels(list2)
+            Reduced_List2= [node(0, 0), node(1, 1)]
+            list2 = self.__ROBDD2.Remove_Nodes(labelled_list2, Reduced_List2)
+            list2.reverse()
+            self.__drawer.draw(list2)
+
+            #######################################
+            flag_barcket,vars_flag,expr_flag,error_list_names,variable_list1,input_exp1 = self.__parser.GUI_check(self.__projectDict['exp1'])
+            variable_list1 , TT_1_p = self.__parser.Parser_Output(input_exp1,variable_list1)            
+            list1 = self.__BDD.start(variable_list1,TT_1_p)
+            list1.reverse()
+            self.__ROBDD1 = ROBDD(len(variable_list1))
+            labelled_list1 = self.__ROBDD1.assign_labels(list1)
+           
+            Reduced_List1= [node(0, 0), node(1, 1)]
+            list11 = self.__ROBDD1.Remove_Nodes(labelled_list1, Reduced_List1)
+            list11.reverse()
+            ##############################################################
+            flag_barcket,vars_flag,expr_flag,error_list_names,variable_list2,input_exp2 = self.__parser.GUI_check(self.__projectDict['exp2'])
+            variable_list2 , TT_2_p = self.__parser.Parser_Output(input_exp2,variable_list2)
+            list2 = self.__BDD.start(variable_list2,TT_2_p)
+            list2.reverse()
+            self.__ROBDD2 = ROBDD(len(variable_list2))
+            labelled_list2 = self.__ROBDD2.assign_labels(list2)
+            Reduced_List2= [node(0, 0), node(1, 1)]
+            list2 = self.__ROBDD2.Remove_Nodes(labelled_list2, Reduced_List2)
+            list2.reverse()
+            ###################################################################
+            if self.__Checker.start(list11,list2,variable_list1,variable_list2) :           
+              self.__Equivalence_label.setText("Equivalent") 
+              self.__Equivalence_label.setStyleSheet("color: green;")  
+
+            else:
+              self.__Equivalence_label.setText("Non-Equivalent") 
+              self.__Equivalence_label.setStyleSheet("color: red;")  
+
+                                    
+            self.__projectDict['result'] = self.__Equivalence_label.text()
+
+
+
+            #SHOW RESULT
+
+
+            #DRAW IMAGES
+            pixmap = QtGui.QPixmap('graph0.png')
+            self.__BDD_1_image.setPixmap(pixmap)
+            self.__BDD_1_image.setScaledContents(True)
+            pixmap = QtGui.QPixmap('graph2.png')
+            self.__BDD_2_image.setPixmap(pixmap)
+            self.__BDD_2_image.setScaledContents(True)
+            pixmap = QtGui.QPixmap('graph1.png')
+            self.__ROBDD_1_image.setPixmap(pixmap)
+            self.__ROBDD_1_image.setScaledContents(True)
+            pixmap = QtGui.QPixmap('graph3.png')
+            self.__ROBDD_2_image.setPixmap(pixmap)
+            self.__ROBDD_2_image.setScaledContents(True)
 
           #Clear Content
           self.__Exp1_Entry.setText('')

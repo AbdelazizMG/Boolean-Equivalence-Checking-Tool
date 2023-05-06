@@ -203,6 +203,11 @@ class Parser:
       for v in sub_TT:
          TT_OUT.append(self.__Boolean_Function_Solve(v))
       vars.reverse()
+      for i in range(0,len(TT_OUT)):
+         if TT_OUT[i]:
+            TT_OUT[i] = 'T'
+         else:
+            TT_OUT[i] = 'F'
       return vars,TT_OUT
       
 

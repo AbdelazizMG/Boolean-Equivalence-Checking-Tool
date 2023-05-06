@@ -1,0 +1,10 @@
+digraph G {
+a;
+a -> 0  [color=blue, style=dashed];
+a -> b1;
+b1;
+b1 -> 0  [color=blue, style=dashed];
+b1 -> 1;
+1;
+0;
+}
