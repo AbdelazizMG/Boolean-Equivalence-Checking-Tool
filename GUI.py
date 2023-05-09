@@ -38,7 +38,8 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__ROBDD_2_image = self.findChild(QtWidgets.QLabel,"ROBDD_image2")
 
                                     #PushButtons
-            self.__check_pushButton = self.findChild(QtWidgets.QPushButton,"check_pushButton")   
+            self.__check_pushButton = self.findChild(QtWidgets.QPushButton,"check_pushButton")
+            self.__exit_pushButton = self.findChild(QtWidgets.QPushButton,"exit_pushButton")   
 
                                     #listWidget
             self.__dataBase_listwidget = self.findChild(QtWidgets.QListWidget,"dataBase_listWidget")                                                 
@@ -47,7 +48,8 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__statusbar = self.findChild(QtWidgets.QStatusBar,"statusbar") 
 
                                     #Do Functionallity  
-            self.__check_pushButton.clicked.connect( self.__Check)                                              
+            self.__check_pushButton.clicked.connect( self.__Check)
+            self.__exit_pushButton.clicked.connect( self.__Close)                                              
 
                                     #Variables  
             self.__projectDict = {     
@@ -63,7 +65,6 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__baseDirectory = os.getcwd()                 #Variable to store cwd before changing any thing
             self.__projectsinDataBase = {} 
             self.__counter = 0
-            self.__exp1validation = 0
 
             self.__parser = Parser()
 
@@ -120,8 +121,7 @@ class UI_Window(QtWidgets.QMainWindow):
 
           if self.__projectDict['exp1_valid'] == '1' and self.__projectDict['exp2_valid'] == '1':
 
-            #Store Trial State
-            self.__saveProject()
+
 
             #Exp1 Operation   
             variable_list1_drawable , TT_1_drawable = self.__parser.Parser_Output(input_exp1,variable_list1)
@@ -209,6 +209,9 @@ class UI_Window(QtWidgets.QMainWindow):
             self.__ROBDD_2_image.setPixmap(pixmap)
             self.__ROBDD_2_image.setScaledContents(True)
 
+            #Store Trial State
+            self.__saveProject()
+
           #Clear Content
           self.__Exp1_Entry.setText('')
           self.__Exp2_Entry.setText('')
@@ -271,10 +274,15 @@ class UI_Window(QtWidgets.QMainWindow):
             for key in self.__projectsinDataBase.keys():
                 self.__drawProject(self.__projectsinDataBase[key]['exp1'] , self.__projectsinDataBase[key]['exp2'], self.__projectsinDataBase[key]['result'])  
 
+    #Function to close the window
+    def __Close(self):
+         self.close()
 # Initialize The App
 ##################################################################################
 if __name__ == "__main__":
    app = QtWidgets.QApplication(sys.argv)
    UIWindow = UI_Window()
    UIWindow.show()
+   app.setStyle('Fusion')
+   UIWindow.setWindowIcon(QtGui.QIcon('icon4.png'))
    app.exec_()

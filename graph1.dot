@@ -1,16 +1,13 @@
 digraph G {
-a;
-a -> 0  [color=blue, style=dashed];
-a -> h1;
-h1;
-h1 -> 0  [color=blue, style=dashed];
-h1 -> g3;
-g3;
-g3 -> 0  [color=blue, style=dashed];
-g3 -> e5;
-e5;
-e5 -> 0  [color=blue, style=dashed];
-e5 -> 1;
+g;
+g -> 0  [color=blue, style=dashed];
+g -> "f-1";
+"f-1";
+"f-1" -> 0  [color=blue, style=dashed];
+"f-1" -> "e-2";
+"e-2";
+"e-2" -> 0  [color=blue, style=dashed];
+"e-2" -> 1;
 1;
 0;
 }

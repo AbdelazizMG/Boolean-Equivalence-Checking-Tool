@@ -13,31 +13,25 @@ class Drawer:
     def draw(self,list1):
 
             self.__graph1 = pydot.Dot(graph_type='digraph')
-            label_value_left  = 0
-            label_value_right = 0
+            label_value  = 0
+            
 
             # Add nodes to the graph
             for  i in range(0,len(list1)):
                 self.__graph1.add_node(pydot.Node(list1[i].data))
                 print("node:",list1[i].data)
                 if(list1[i].left != None):
-                    if(type(list1[i].left.data)==type("y") and len(list1[i].left.data)==1):
-                        label_value_left=label_value_left + 1
-                        list1[i].left.data=list1[i].left.data+ "% s" % label_value_left  
-                        label_value_left_string= "% s" % label_value_left
-                        list1[i].left.data= list1[i].left.data.rstrip(label_value_left_string)
-
-                        label_value_left=label_value_left+1
-                        list1[i].left.data=list1[i].left.data+ "% s" % label_value_left
+                    if(type(list1[i].left.data)==type("y") and not("-" in list1[i].left.data)):
+                        label_value=label_value + 1
+                        list1[i].left.data=list1[i].left.data + "-" + "% s" % label_value
 
                     print(list1[i].left.data)
                     self.__graph1.add_edge(pydot.Edge(list1[i].data, list1[i].left.data, color="blue", style="dashed"))
-                    if(type(list1[i].right.data)==type("y") and len(list1[i].right.data)==1):
-                        label_value_right=label_value_right + 1
-                        list1[i].right.data=list1[i].right.data+"% s" % label_value_right
-                        label_value_right=label_value_right+1
-                        #list1[i].right.data=list1[i].right.data+"% s" % label_value_right
-                        #label_value_right=label_value_right+1
+                    
+                    if(type(list1[i].right.data)==type("y") and not("-" in list1[i].right.data)):
+                        label_value=label_value + 1
+                        list1[i].right.data=list1[i].right.data + "-" + "% s" % label_value 
+                        
                     print(list1[i].right.data)
                     self.__graph1.add_edge(pydot.Edge(list1[i].data, list1[i].right.data))
 

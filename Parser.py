@@ -69,6 +69,7 @@ class Parser:
          for i in range(len(vars_list)):
             temp = re.sub(vars_list[i],TT[i][j],temp)
          string_sub_table.append(temp)
+      print(string_sub_table)
       return string_sub_table
    
    def __TT_comb(self,vars_list):
