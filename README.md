@@ -24,7 +24,8 @@ python GUI.py
 ```
 # GUI
 ![GUI](https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool/assets/68661639/28235cb4-41c4-49e1-9bb4-01a271ef0b14)
-![yarab](https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool/assets/68661639/b2de0c16-e113-4ce5-aec2-32ad77480346)
+![example](https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool/assets/68661639/3825dea6-ca50-4f1e-8677-03eccc8d915e)
+
 
 
 
