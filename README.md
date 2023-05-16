@@ -10,7 +10,18 @@
 # GUI Technology 
 - PyQT5
 # Setup
-` pip install PyQT5
+- Clone the Repo
+```
+git clone https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool.git
+```
+- Install Required Libraries
+```
+pip install PyQT5
+```
+- Run Code
+```
+python GUI.py
+```
 # GUI
 ![GUI](https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool/assets/68661639/28235cb4-41c4-49e1-9bb4-01a271ef0b14)
 ![yarab](https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool/assets/68661639/b2de0c16-e113-4ce5-aec2-32ad77480346)
