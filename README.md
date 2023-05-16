@@ -9,7 +9,7 @@
 ![system](https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool/assets/68661639/11020694-7d7b-4d6a-b779-1be2144158dc)
 # GUI Technology 
 - PyQT5
-# Setup
+# Setup & Usage
 - Clone the Repo
 ```
 git clone https://github.com/AbdelazizMG/Boolean-Equivalence-Checking-Tool.git
